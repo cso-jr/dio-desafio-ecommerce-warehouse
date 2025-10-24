@@ -40,7 +40,6 @@ public class ProductEntity {
 		return stock;
 	}
 	
-	
 	@PrePersist
 	private void prepPersist() {
 		this.id = UUID.randomUUID();

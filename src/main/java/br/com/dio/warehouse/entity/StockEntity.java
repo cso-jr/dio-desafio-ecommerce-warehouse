@@ -50,6 +50,11 @@ public class StockEntity {
 	@JoinColumn(name= "product_id", nullable = false)
 	private ProductEntity product;
 	
+	public boolean isUnavailable() {
+		return status == StockStatus.UNAVAILABLE;
+	}
+	
+	
 	@PrePersist
 	private void prepPersist() {
 		this.id = UUID.randomUUID();
