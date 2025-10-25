@@ -1,5 +1,8 @@
 package br.com.dio.warehouse.entity;
 
+import static br.com.dio.warehouse.entity.StockStatus.AVAILABLE;
+
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Objects;
@@ -7,7 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringExclude;
-import static br.com.dio.warehouse.entity.StockStatus.AVALIABLE;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -32,13 +35,25 @@ public class ProductEntity {
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
 	private Set<StockEntity> stocks = new HashSet<>();
 	
+	
+	private StockEntity getStockWithSoldPrice() {
+	return this.stocks.stream()
+		.filter(s -> s.getStatus().equals(AVAILABLE))
+		.min(Comparator.comparing(StockEntity::getSoldPrice))
+		.orElseThrow();
+	}
+	
+		
 	public StockEntity decStock() {
-		var stock = this.stocks.stream()
-				.filter(s -> s.getStatus().equals(AVALIABLE))
-				.min(Comparator.comparing(StockEntity::getSoldPrice))
-				.orElseThrow();
+		var stock = getStockWithSoldPrice();
+		stock.decAmount();
 		return stock;
 	}
+	
+	public BigDecimal getPrice() {
+		return getStockWithSoldPrice().getSoldPrice();
+	}
+	
 	
 	@PrePersist
 	private void prepPersist() {

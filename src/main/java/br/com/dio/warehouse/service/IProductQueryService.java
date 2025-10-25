@@ -4,11 +4,10 @@ import java.util.UUID;
 
 import br.com.dio.warehouse.entity.ProductEntity;
 
-public interface IProductService {
+public interface IProductQueryService {
 
-	ProductEntity save(final ProductEntity entity);
-		
-	void purchase(final UUID id);
+
+	ProductEntity findById(final UUID id);
 	
 	
 	

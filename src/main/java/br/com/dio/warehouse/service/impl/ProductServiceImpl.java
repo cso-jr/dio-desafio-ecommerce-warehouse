@@ -9,16 +9,18 @@ import br.com.dio.warehouse.dto.ProductStorefrontSaveDTO;
 import br.com.dio.warehouse.entity.ProductEntity;
 import br.com.dio.warehouse.mapper.IProductMapper;
 import br.com.dio.warehouse.repository.ProductRepository;
+import br.com.dio.warehouse.service.IProductQueryService;
 import br.com.dio.warehouse.service.IProductService;
 import br.com.dio.warehouse.service.IStockService;
 
 @Service
 public class ProductServiceImpl implements IProductService{
 
-	private final ProductRepository repository = null;
-	private final IStockService stockService = null;
-	private final RestClient storefrontClient = null;
-	private final IProductMapper mapper = null;
+	private ProductRepository repository;
+	private IProductQueryService queryService;
+	private IStockService stockService;
+	private RestClient storefrontClient;
+	private IProductMapper mapper;
 	
 	
 	
@@ -27,21 +29,16 @@ public class ProductServiceImpl implements IProductService{
 		repository.save(entity);
 		var dto = mapper.toDTO(entity);
 		saveStorefront(dto);
-		
 		return entity;
 	}
 
 
 
-	@Override
-	public ProductEntity findById(UUID id) {
-		return repository.findById(id).orElseThrow();
-	
-	}
+
 
 	@Override
 	public void purchase(UUID id) {
-		var entity = findById(id);
+		var entity = queryService.findById(id);
 		var stock = entity.decStock();
 		repository.save(entity);
 		if(stock.isUnavailable()) {
